@@ -676,6 +676,7 @@ BabbleSpell:RegisterTranslations("enUS", function()
 		["Improved Backstab"] = true,
 		["Improved Battle Shout"] = true,
 		["Improved Berserker Rage"] = true,
+		["Improved Blade Tactics"] = true, -- TWoW Change from Improved Slice and Dice
 		["Improved Blessing of Might"] = true,
 		["Improved Blessing of Wisdom"] = true,
 		["Improved Blizzard"] = true,
@@ -798,7 +799,7 @@ BabbleSpell:RegisterTranslations("enUS", function()
 		["Improved Shred"] = true,
 		["Improved Sinister Strike"] = true,
 		["Improved Slam"] = true,
-		["Improved Slice and Dice"] = true,
+	--	["Improved Slice and Dice"] = true, -- TWoW change to Improved Blade Tactics
 		["Improved Spellstone"] = true,
 		["Improved Sprint"] = true,
 		["Improved Starfire"] = true,
