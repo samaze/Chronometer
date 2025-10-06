@@ -746,7 +746,7 @@ function Chronometer:AddTimer(kind, name, duration, targeted, isgain, selforsele
 	self.timers[kind][name] = { d=duration, k={t=targeted,g=isgain,s=selforselect}, x=extra }
 end
 
-function Chronometer:StartTimer(timer, name, target, rank, durmod)
+function Chronometer:StartTimer(timer, name, target, rank, durmod, skipClean)
 	-- check if spell is disabled
 	local _, class = UnitClass("player")
 	local timer_class = timer.x.cl == nil and class or timer.x.cl
@@ -755,7 +755,7 @@ function Chronometer:StartTimer(timer, name, target, rank, durmod)
 	if not target then target = "none" end
 	if not rank then rank = timer.r or 0 end
 	if not durmod then durmod = 0 end
-	if timer.x.gr then self:CleanGroup(timer.x.gr, target) end
+	if not skipClean and timer.x.gr then self:CleanGroup(timer.x.gr, target) end
 	if timer.d == 0 then return end
 	if (not self.db.profile.selfbars) and (target == UnitName("player") or (target == "none" and timer.k.g)) then return end
 	if (self.db.profile.onlyself) and (timer.k.t ~= nil and target ~= UnitName("player")) then return end
@@ -809,6 +809,18 @@ function Chronometer:StartTimer(timer, name, target, rank, durmod)
 	self:SetCandyBarReversed(id, self.db.profile.reverse)
 	self:SetCandyBarOnClick(id, function (...) self:CandyOnClick(unpack(arg)) end, timer.x.rc, timer.x.mc)
 	self:StartCandyBar(id, true)
+
+	-- If this timer declares other SPELL timers to start with it, kick those off too
+	if timer.x.also then
+		for _, other in pairs(timer.x.also) do
+			local otherTimer = self.timers[self.SPELL] and self.timers[self.SPELL][other]
+				if otherTimer then
+					-- start the other spell timer on the same target/rank; no durmod
+					-- pass skipClean=true so the 'also' timer doesn't CleanGroup and remove the original
+					self:StartTimer(otherTimer, other, target, rank, 0, true)
+				end
+		end
+	end
 end
 
 function Chronometer:GetDuration(duration, record, rank, cp)
